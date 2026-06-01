@@ -6,7 +6,7 @@
 --- 
 
 ## Descripción
-El problema a resolver para esta evidencia es el siguiente: ¿Cómo puede un servidor  atender múltiples clientes simultáneamente sin bloquear a ninguno? En un servidor secuencial tradicional, cada cliente debe esperar a que el anterior termine de ser atendido antes de recibir cualquier respuesta. Esto hace que el sistema sea mucho menos efectivo y mucho menos usable en la práctica para más de un usuario. "La solución natural a este problema es el paradigma de programación concurrente, donde justamente múltiples flujos de ejecución (threads) corren de manera simultanea e intercalada compartiendo recursos del mismo proceso para lograr un trabajo mucho más eficiente y como lo dice, concurrente." (Tanenbaum, 2014)
+El problema a resolver para esta evidencia es el siguiente: ¿Cómo puede un servidor  atender múltiples clientes simultáneamente sin bloquear a ninguno? En un servidor secuencial tradicional, cada cliente debe esperar a que el anterior termine de ser atendido antes de recibir cualquier respuesta. Esto hace que el sistema sea mucho menos efectivo y mucho menos usable en la práctica para más de un usuario. La solución natural a este problema es el paradigma de programación concurrente, donde justamente múltiples flujos de ejecución (threads) corren de manera simultanea e intercalada compartiendo recursos del mismo proceso para lograr un trabajo mucho más eficiente y como lo dice, concurrente. (Tanenbaum, 2014)
 
 En esta evidencia se implementa un servidor de chat local donde varios clientes pueden conectarse simultáneamente, enviar mensajes y recibirlos en tiempo real. Todos los mensajes enviados por un cliente son retransmitidos a todos los demás clientes conectados. El servidor crea un nuevo thread por cada cliente que se conecta, permitiendo atender conexiones en paralelo sin que una bloquee a las demás permitiendo que se pueda trabajar al mismo tiempo.
 
@@ -122,9 +122,18 @@ Las pruebas están diseñadas específicamente para verificar el comportamiento 
 
 El programa pasó correctamente las 7 pruebas definidas. Cada prueba verifica un aspecto específico del paradigma concurrente: desde la creación de múltiples threads simultáneos hasta la correcta sincronización con el mutex.
 
-<img width="783" height="888" alt="image" src="https://github.com/user-attachments/assets/7b6c1508-d820-4bb9-85b8-333eb481b0a9" />
-<img width="785" height="895" alt="image" src="https://github.com/user-attachments/assets/84d35fd1-db3d-4e97-9d92-c3e961fc2512" />
-<img width="873" height="898" alt="image" src="https://github.com/user-attachments/assets/7cbfe755-c182-4953-94ec-e520b444ad77" />
+### Imagenes Pruebas
+Prueba 1
+<img width="1200" height="240" alt="image" src="https://github.com/user-attachments/assets/86147a56-3755-46de-97ff-f822ce53552c" />
+<img width="818" height="385" alt="image" src="https://github.com/user-attachments/assets/6c784b52-9687-49fb-a4cc-42dee8a6b942" />
+
+Prueba 2
+<img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/50e06cd3-a3d4-4a2c-8bc5-ba33eb63b2fe" />
+<img width="478" height="140" alt="image" src="https://github.com/user-attachments/assets/93172fb5-b75c-4d23-8505-00e800d65f3a" />
+
+Prueba 3
+<img width="918" height="236" alt="image" src="https://github.com/user-attachments/assets/12cad215-dbb4-4e6a-a5bc-f02db33a034b" />
+<img width="738" height="204" alt="image" src="https://github.com/user-attachments/assets/801b3c37-bc68-48a8-a529-d4c44d245a03" />
 
 ---
 
@@ -142,7 +151,7 @@ El broadcast es la parte más lenta donde por cada mensaje enviado, el servidor 
 
 ### Paradigma Alternativo | Programación Asíncronica
 
-"Python ofrece `asyncio` como alternativa al modelo de threads. En lugar de crear un thread por cliente, `asyncio` implementa concurrencia mediante un event loop en un solo thread que intercala la ejecución de múltiples coroutines (una función especial que puede pausar su ejecución, devolver el control al programa y reanudarse exactamente en el punto donde se quedó), cediendo el control voluntariamente en operaciones de I/O (Input / Output). Esto significa que en lugar de tener 100 threads para 100 clientes, hay un solo thread manejando 100 coroutines." (GeeksforGeeks, 2026)
+Python ofrece `asyncio` como alternativa al modelo de threads. En lugar de crear un thread por cliente, `asyncio` implementa concurrencia mediante un event loop en un solo thread que intercala la ejecución de múltiples coroutines (una función especial que puede pausar su ejecución, devolver el control al programa y reanudarse exactamente en el punto donde se quedó), cediendo el control voluntariamente en operaciones de I/O (Input / Output). Esto significa que en lugar de tener 100 threads para 100 clientes, hay un solo thread manejando 100 coroutines (GeeksforGeeks, 2026)
 
 ### Comparación
 
