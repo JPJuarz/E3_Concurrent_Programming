@@ -32,19 +32,19 @@ Antes de continuar, aquí hay unos conceptos importantes para entender lo que se
 
 El servidor principal corre en un loop infinito esperando conexiones entrantes. Cada vez que llega un cliente nuevo, se crea un thread dedicado exclusivamente a ese cliente y el loop regresa inmediatamente a esperar el siguiente. La lista de clientes conectados es un recurso compartido entre todos los threads y está potegida por un mutex para evitar race conditions.
 
-<img width="1366" height="638" alt="image" src="https://github.com/user-attachments/assets/3a5a02c0-5f13-4e14-8d9c-bea934be4c90" />
+<img width="1038" height="351" alt="image" src="https://github.com/user-attachments/assets/a5912b98-9b3b-4486-b4e3-5932191c90f9" />
 
 ### Modelo 2 — Flujo de un mensaje
 
 Cuando un cliente envía un mensaje, su thread correspondiente recibe ese mensaje y adquiere el mutex de la lista de clientes conectados. Después itera sobre todos menos si mismo y reenvía el mensaje a cada cliente de la lista. Solo una vez que se termina, se libera el mutex para que otros threads puedan acceder a la lista.
 
-<img width="665" height="759" alt="image" src="https://github.com/user-attachments/assets/5455e379-8557-4c47-a0b2-d642a8c110a0" />
+<img width="1475" height="250" alt="image" src="https://github.com/user-attachments/assets/0d1ea8d6-9b45-4cf7-8d85-9e75b85ead92" />
 
 ### Modelo 3 — Estados de un cliente
 
 Cada cliente pasa por cuatro diferentes estados en el tiempo que existe en el servidor. Antes que nada, espera la conexión inicial, después se conecta (donde se crea su thread y se agrega a la lista), después pasa al estado activo donde manda y recibe mensajes vía broadcast y finalmente la útlima la cuál es la desconexión donde el thread termina y el cliente se elimina de la lista.
 
-<img width="1467" height="276" alt="image" src="https://github.com/user-attachments/assets/7bb9e4ef-141b-4f97-9422-ac599eebc415" />
+<img width="1249" height="264" alt="image" src="https://github.com/user-attachments/assets/e493708d-7d83-4137-bdc3-e9631664068e" />
 
 ---
 
@@ -147,7 +147,7 @@ Prueba 3
 | Broadcast a n clientes | O(n) |
 | Memoria total con n clientes | O(n) |
 
-El broadcast es la parte más lenta donde por cada mensaje enviado, el servidor itera sobre todos los clientes conectados. Con `n` clientes y `m` mensajes, la complejidad final es **O(n · m)**.
+El broadcast es la parte más lenta donde por cada mensaje enviado, el servidor itera sobre todos los clientes conectados. Con `m` clientes y `n` mensajes, la complejidad final es **O(n · m)**.
 
 ### Paradigma Alternativo | Programación Asíncronica
 
@@ -160,10 +160,12 @@ Python ofrece `asyncio` como alternativa al modelo de threads. En lugar de crear
 | Modelo de ejecución | Un thread por cliente | Un event loop, múltiples coroutines |
 | Complejidad broadcast | O(n) | O(n) |
 | Race conditions | Posibles, requiere mutex | N/A (single-thread) |
-| Escalabilidad | Limitada ( Aprox cientos) | Alta (miles) |
+| Escalabilidad | Limitada (Aprox cientos) | Alta (miles) |
 | Legibilidad del código | Alta | Media (requiere async/await) |
 
 Ambas soluciones tienen la misma complejidad temporal **O(n · m)**, pero `asyncio` escala mejor en memoria y elimina el problema de race conditions al no tener verdadero paralelismo de escritura. Aun así, para el alcance de este problema el cual es de pocos clientes locales, la solución con threads es más directa, fácil de leer y más representativa del paradigma concurrente visto en clase, donde los threads son la unidad de concurrencia explícita 
+
+Escogí el paradigma concurrente porque, por la pura naturaleza de un servidor de chat, lo que se ocupa es poder atender a muchas personas al mismo tiempo mientras mandan y reciben mensajes. Al mismo tiempo, probablemente el tema que más me intereso fue concurrencia en el semestre lo cuál influenció. Si vemos las otras opciones de paradigmas, nos damos cuenta de que ninguna se adapta a lo que realmente necesita este proyecto. Por ejemplo, el paradigma lógico sirve más para demostraciones matemáticas y el de scripting para automatizar tareas del sistema operativo, por lo que no nos ayudan a mantener multiples conexiones y menos en tiempo real. Por otro lado, el paradigma funcional usa funciones puras y no permite cambiar los datos fácilmente (inmutabilidad); pero en el servidor o en el chat la lista de clientes cambia todo el tiempo cuando alguien entra o sale, así que manejar ese recurso compartido ahí sería mucho más complicado. Finalmente, el paradigma paralelo que se puede llegar a confundir con concurrencia, es diferente porque el paralelismo busca agarrar una sola tarea muy pesada y dividirla para que termine más rápido. Este proyecto no ocupa potencia bruta, sino coordinar muchas tareas chiquitas e independientes que pasan al mismo tiempo. Por eso, la concurrencia con threads y locks es la solución más natural, directa y eficiente para este problema.
 
 ---
 
